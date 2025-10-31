@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Add jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<div class="card mx-auto" style="max-width:900px">
+  <div class="card-body">
+    <h4 class="card-title">AI Chat Assistant</h4>
+    <p class="text-muted">Ask about vehicle symptoms, suggestions, or scheduling help.</p>
+    <div id="chatBox" style="height:420px; overflow:auto; border:1px solid #f1f3f5; padding:12px; background:#fff;"></div>
+    <div class="input-group mt-3">
+      <input type="text" id="chatInput" class="form-control" placeholder="Describe the symptom or ask a question...">
+      <div class="input-group-append">
+        <button id="sendBtn" class="btn btn-primary">Send</button>
+      </div>
+    </div>
+    <div id="bookingArea" class="mt-3 text-center" style="display:none;">
+      <div class="alert alert-info">For more information, contact the administrator</div>
+      <button id="bookAppointmentBtn" class="btn btn-success">Book Appointment</button>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div class="modal fade" id="bookingModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Book Appointment</h5>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-success">Your Token Number: <span id="tokenNumber"></span></div>
+          <p>A PDF with your consultation details will be downloaded automatically.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const chatBox = document.getElementById('chatBox');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const bookingArea = document.getElementById('bookingArea');
+const bookAppointmentBtn = document.getElementById('bookAppointmentBtn');
+let currentQuery = '';
+
+function appendMessage(who, text){
+  const el = document.createElement('div');
+  el.style.marginBottom = '10px';
+  el.innerHTML = '<div><strong>'+who+':</strong></div><div>'+text+'</div>';
+  chatBox.appendChild(el);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function generatePDF(data) {
+  // Using jspdf for PDF generation
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  doc.text('Consultation Details', 20, 20);
+  doc.text(`Name: ${data.name}`, 20, 40);
+  doc.text(`Token Number: ${data.token}`, 20, 50);
+  doc.text(`Vehicle Type: ${data.vehicleType}`, 20, 60);
+  doc.text(`Vehicle Number: ${data.vehicleNo}`, 20, 70);
+  doc.text(`Query: ${data.query}`, 20, 80);
+  doc.text(`Date: ${new Date().toLocaleString()}`, 20, 90);
+  
+  doc.save('consultation-details.pdf');
+}
+
+sendBtn.addEventListener('click', async ()=>{
+  const msg = chatInput.value.trim();
+  if(!msg) return;
+  currentQuery = msg;
+  appendMessage('You', msg);
+  chatInput.value = '';
+  
+  const resp = await fetch('/api/chat', {
+    method:'POST', 
+    headers:{'Content-Type':'application/json'}, 
+    body: JSON.stringify({message:msg})
+  });
+  const data = await resp.json();
+  appendMessage('Assistant', data.reply);
+  bookingArea.style.display = 'block';
+});
+
+bookAppointmentBtn.addEventListener('click', async () => {
+  const resp = await fetch('/api/generate_token', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ query: currentQuery })
+  });
+  const data = await resp.json();
+  
+  document.getElementById('tokenNumber').textContent = data.token;
+  $('#bookingModal').modal('show');
+  
+  // Generate and download PDF
+  generatePDF({
+    name: data.name,
+    token: data.token,
+    vehicleType: data.vehicleType,
+    vehicleNo: data.vehicleNo,
+    query: currentQuery
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-dark text-white">
+    <div class="text-center mb-5">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AutoPredict AI" class="mb-3" style="height: 50px;">
+        <h1 class="display-4 mb-2 font-weight-normal text-white">AutoPredict AI</h1>
+        <p class="h5 font-weight-normal text-muted">Predictive Vehicle Maintenance System</p>
+    </div>
+
+    <div class="row justify-content-center w-100" style="max-width: 1000px;">
+        <div class="col-md-5 mb-4">
+            <div class="card bg-dark-navy border-0 shadow h-100">
+                <div class="card-body text-center p-5">
+                    <div class="icon-circle bg-darker mb-4 mx-auto d-flex align-items-center justify-content-center">
+                        <i class="fas fa-shield-alt text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="h4 mb-3">Admin Portal</h2>
+                    <p class="text-muted mb-4">Fleet management and analytics</p>
+                    <a href="{{ url_for('admin_login') }}" class="btn btn-primary btn-lg px-5"
+                       style="background-color: #00A3FF; border: none;">
+                        Access Admin Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5 mb-4">
+            <div class="card bg-dark-navy border-0 shadow h-100">
+                <div class="card-body text-center p-5">
+                    <div class="icon-circle bg-darker mb-4 mx-auto d-flex align-items-center justify-content-center">
+                        <i class="fas fa-user text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <h2 class="h4 mb-3">User Portal</h2>
+                    <p class="text-muted mb-4">Vehicle health and service scheduling</p>
+                    <a href="{{ url_for('user_login') }}" class="btn btn-primary btn-lg px-5"
+                       style="background-color: #00A3FF; border: none;">
+                        Access User Portal
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-dark-navy {
+    background-color: #0A1929;
+}
+.bg-darker {
+    background-color: #060D16;
+}
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+.text-primary {
+    color: #00A3FF !important;
+}
+</style>
+{% endblock %}

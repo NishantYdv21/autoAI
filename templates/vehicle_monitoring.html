@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Vehicle Monitoring</h2>
+  <div class="text-muted">Real-time fleet overview</div>
+</div>
+
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card mb-3 p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <input class="form-control" placeholder="Search vehicles..." style="max-width:420px">
+        <button class="btn btn-light">Filter</button>
+      </div>
+
+      <div class="list-group" id="fleetList">
+        {% for v in fleet %}
+        <div class="list-group-item d-flex justify-content-between align-items-center fleet-item" data-index="{{ loop.index0 }}" style="cursor:pointer">
+          <div>
+            <div><strong>{{ v.vehicle_no }}</strong></div>
+            <div class="small text-muted">{{ v.vehicle_type }} · {{ v.location or 'Unknown' }}</div>
+          </div>
+          <div class="text-right">
+            <div style="width:120px">
+              <div class="d-flex align-items-center justify-content-end">
+                <div class="mr-2 small text-muted">{{ v.uptime }}%</div>
+                {% if v.predicted_risk == 'High' %}
+                  <span class="badge badge-danger">critical</span>
+                {% elif v.predicted_risk == 'Medium' %}
+                  <span class="badge badge-warning">warning</span>
+                {% else %}
+                  <span class="badge badge-success">healthy</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card p-3 mb-3">
+      <h5 class="mb-2">Vehicle Details</h5>
+      <div class="row">
+        <div class="col-6 small text-muted">License Plate</div>
+        <div class="col-6"><strong>{{ selected.vehicle_no }}</strong></div>
+        <div class="col-6 small text-muted">Model</div>
+        <div class="col-6">{{ selected.model }}</div>
+        <div class="col-6 small text-muted">Location</div>
+        <div class="col-6">{{ selected.location }}</div>
+        <div class="col-6 small text-muted">Active Issues</div>
+        <div class="col-6 text-success">{{ selected.active_issues }}</div>
+      </div>
+
+      <hr>
+      <h6 class="mb-2">Real-time Telemetry</h6>
+      <canvas id="telemetryChart" height="140"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Embed fleet and telemetry data for client-side interactivity
+  const fleetData = {{ fleet|tojson }};
+  let telemetryBase = {{ telemetry|tojson }};
+
+  const ctx = document.getElementById('telemetryChart').getContext('2d');
+  let telemetryChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: telemetryBase.timestamps,
+      datasets: [
+        { label: 'Engine Temp (°C)', data: telemetryBase.temperature, borderColor: '#e74a3c', fill:false },
+        { label: 'Oil Pressure', data: telemetryBase.oil, borderColor: '#2ea6a6', fill:false },
+        { label: 'Vibration', data: telemetryBase.vibration, borderColor: '#f6c23e', fill:false }
+      ]
+    },
+    options:{ responsive:true, plugins:{legend:{position:'bottom'}} }
+  });
+
+  // helper to generate telemetry for a vehicle (simple deterministic pseudo-rand using index)
+  function generateTelemetryForIndex(idx){
+    const baseT = 80 + (idx % 5) * 2; // base temp
+    const temp = [];
+    const oil = [];
+    const vib = [];
+    for(let i=0;i<telemetryBase.timestamps.length;i++){
+      temp.push(Math.round((baseT + Math.sin(i/2 + idx) * 5)));
+      oil.push(Math.round(40 + Math.cos(i/3 + idx) * 8));
+      vib.push(Math.round((1 + Math.abs(Math.sin(i + idx))*2)*10)/10);
+    }
+    return { timestamps: telemetryBase.timestamps, temperature: temp, oil: oil, vibration: vib };
+  }
+
+  function updateSelected(idx){
+    const v = fleetData[idx];
+    document.querySelector('[data-selected="vehicle_no"]').textContent = v.vehicle_no;
+    document.querySelector('[data-selected="model"]').textContent = v.model || v.vehicle_type || 'N/A';
+    document.querySelector('[data-selected="location"]').textContent = v.location || 'Unknown';
+    document.querySelector('[data-selected="active_issues"]').textContent = v.active_issues || 0;
+
+    // update chart
+    const t = generateTelemetryForIndex(idx);
+    telemetryChart.data.labels = t.timestamps;
+    telemetryChart.data.datasets[0].data = t.temperature;
+    telemetryChart.data.datasets[1].data = t.oil;
+    telemetryChart.data.datasets[2].data = t.vibration;
+    telemetryChart.update();
+  }
+
+  // attach click handlers
+  document.querySelectorAll('.fleet-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      document.querySelectorAll('.fleet-item').forEach(x=>x.classList.remove('active'));
+      el.classList.add('active');
+      const idx = parseInt(el.getAttribute('data-index'));
+      updateSelected(idx);
+    });
+  });
+
+  // initialize selection
+  updateSelected(0);
+</script>
+
+{% endblock %}

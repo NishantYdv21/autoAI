@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-dark text-white">
+    <div class="login-container">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AutoPredict AI" class="mb-2" style="height: 40px;">
+            <h1 class="h3 mb-0 font-weight-normal text-white">AutoPredict AI</h1>
+            <p class="text-muted">User Portal - Login</p>
+        </div>
+        
+        <div class="card bg-dark-navy border-0 shadow p-4" style="width: 400px;">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            <form method="post" action="{{ url_for('user_login') }}">
+                <div class="form-group mb-3">
+                    <label for="name" class="text-muted mb-2">Name</label>
+                    <input type="text" class="form-control bg-darker text-white border-0" 
+                           id="name" name="name" placeholder="Enter your name"
+                           style="height: 50px;">
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="vehicle_no" class="text-muted mb-2">Vehicle Number</label>
+                    <input type="text" class="form-control bg-darker text-white border-0" 
+                           id="vehicle_no" name="vehicle_no" placeholder="e.g., ABC-1234"
+                           style="height: 50px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-3"
+                        style="height: 50px; background-color: #00A3FF; border: none;">
+                    Login
+                </button>
+
+                <div class="text-center">
+                    <a href="#" class="btn btn-link text-muted mb-2 text-decoration-none" 
+                       data-toggle="modal" data-target="#registerModal">
+                        New user? Sign up
+                    </a>
+                </div>
+                
+                <div class="text-center mt-2">
+                    <a href="{{ url_for('portal_selection') }}" class="btn btn-link text-muted text-decoration-none">
+                        Back to portal selection
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content bg-dark-navy text-white">
+            <form method="post" action="{{ url_for('register') }}">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Register New User</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="reg_name" class="text-muted mb-2">Name</label>
+                        <input type="text" class="form-control bg-darker text-white border-0" 
+                               name="reg_name" id="reg_name" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="reg_vehicle" class="text-muted mb-2">Vehicle Number</label>
+                        <input type="text" class="form-control bg-darker text-white border-0" 
+                               name="reg_vehicle" id="reg_vehicle" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="submit" class="btn btn-primary"
+                            style="background-color: #00A3FF; border: none;">Register</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-dark-navy {
+    background-color: #0A1929;
+}
+.bg-darker {
+    background-color: #060D16;
+}
+.form-control:focus {
+    background-color: #060D16;
+    border-color: #00A3FF;
+    box-shadow: none;
+    color: white;
+}
+.form-control::placeholder {
+    color: #4A5568;
+}
+.modal-content {
+    background-color: #0A1929;
+}
+.close {
+    color: white;
+}
+.close:hover {
+    color: #00A3FF;
+}
+</style>
+{% endblock %}

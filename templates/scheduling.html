@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Service Scheduling</h2>
+  <div class="text-muted">Manage appointments & center capacity</div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body d-flex flex-wrap">
+    <div class="p-3 mr-3" style="min-width:180px;background:#fff;border-radius:10px;box-shadow:0 6px 12px rgba(0,0,0,0.03)">
+      <div class="small text-muted">Mumbai Central</div>
+      <div class="h4 mt-1">12/15 slots</div>
+      <div class="badge badge-warning mt-1">80%</div>
+    </div>
+    <div class="p-3 mr-3" style="min-width:180px;background:#fff;border-radius:10px;box-shadow:0 6px 12px rgba(0,0,0,0.03)">
+      <div class="small text-muted">Delhi South</div>
+      <div class="h4 mt-1">8/12 slots</div>
+      <div class="badge badge-warning mt-1">67%</div>
+    </div>
+    <div class="p-3 mr-3" style="min-width:180px;background:#fff;border-radius:10px;box-shadow:0 6px 12px rgba(0,0,0,0.03)">
+      <div class="small text-muted">Bangalore East</div>
+      <div class="h4 mt-1">6/10 slots</div>
+      <div class="badge badge-success mt-1">60%</div>
+    </div>
+    <div class="p-3" style="min-width:180px;background:#fff;border-radius:10px;box-shadow:0 6px 12px rgba(0,0,0,0.03)">
+      <div class="small text-muted">Chennai North</div>
+      <div class="h4 mt-1">4/8 slots</div>
+      <div class="badge badge-success mt-1">50%</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Scheduled Appointments</h5>
+      <div>
+        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#newAppointmentModal">+ New Appointment</button>
+      </div>
+    </div>
+    <table class="table table-sm" id="appointmentsTable">
+      <thead><tr><th>Vehicle</th><th>Service Type</th><th>Date & Time</th><th>Priority</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>MH-12-AB-1234</td><td>Brake System Check</td><td>2025-11-04 10:00 AM</td><td>High</td><td>Scheduled</td></tr>
+        <tr><td>DL-09-CD-5678</td><td>Oil Change</td><td>2025-11-05 02:00 PM</td><td>Medium</td><td>Pending</td></tr>
+      </tbody>
+    </table>
+
+    <!-- New Appointment Modal -->
+    <div class="modal fade" id="newAppointmentModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">New Service Appointment</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form id="appointmentForm">
+              <div class="form-group">
+                <label>Vehicle License Plate</label>
+                <input type="text" class="form-control" id="vehiclePlate" required>
+              </div>
+              <div class="form-group">
+                <label>Service Type</label>
+                <input type="text" class="form-control" id="serviceType" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Date</label>
+                  <input type="date" class="form-control" id="appointmentDate" required>
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Time</label>
+                  <input type="time" class="form-control" id="appointmentTime" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Priority</label>
+                  <select class="form-control" id="priority">
+                    <option>Low</option>
+                    <option selected>Medium</option>
+                    <option>High</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Service Center</label>
+                  <select class="form-control" id="serviceCenter">
+                    <option>Mumbai Central</option>
+                    <option>Delhi South</option>
+                    <option>Bangalore East</option>
+                    <option>Chennai North</option>
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="createAppointment">Create Appointment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    document.getElementById('createAppointment').addEventListener('click', function() {
+      const form = document.getElementById('appointmentForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const vehiclePlate = document.getElementById('vehiclePlate').value;
+      const serviceType = document.getElementById('serviceType').value;
+      const date = document.getElementById('appointmentDate').value;
+      const time = document.getElementById('appointmentTime').value;
+      const priority = document.getElementById('priority').value;
+      const center = document.getElementById('serviceCenter').value;
+
+      // Add to table
+      const tbody = document.querySelector('#appointmentsTable tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${vehiclePlate}</td>
+        <td>${serviceType}</td>
+        <td>${date} ${time}</td>
+        <td>${priority}</td>
+        <td>Scheduled</td>
+      `;
+      tbody.appendChild(tr);
+
+      // Hide modal
+      $('#newAppointmentModal').modal('hide');
+      form.reset();
+
+      // Optional: Call your backend API
+      fetch('/api/schedule', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          vehicle_no: vehiclePlate,
+          service_type: serviceType,
+          date: date,
+          time: time,
+          priority: priority,
+          center: center
+        })
+      });
+    });
+    </script>
+  </div>
+</div>
+
+{% endblock %}

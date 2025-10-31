@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  /* RCA page specific styles to resemble provided screenshot */
+  .rca-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px }
+  .rca-card { background:#fff;border-radius:12px;padding:18px;box-shadow:0 10px 20px rgba(22,28,37,0.06) }
+  .rca-big { display:flex; justify-content:space-between; align-items:center }
+  .percent-badge { width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff }
+  .percent-badge.red { background:linear-gradient(135deg,#e74a3b,#c5302b) }
+  .percent-badge.orange { background:linear-gradient(135deg,#f6c23e,#e1a92b) }
+  .percent-badge.blue { background:linear-gradient(135deg,#4e73df,#2e59d9) }
+  .small-muted { color:#7a7f86 }
+  .capa-list .title { font-weight:600 }
+  .capa-item { padding:10px 0; border-bottom:1px solid #f1f3f5 }
+</style>
+
+<div class="rca-header">
+  <div>
+    <h2 class="mb-0">RCA Insights</h2>
+    <div class="small text-muted">Root cause, CAPA and component failure trends</div>
+  </div>
+  <div class="text-muted small">Last updated: {{ ("now") }}</div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="rca-card">
+          <div class="rca-big">
+            <div>
+              <div class="small-muted">Brake System</div>
+              <div class="h3 mt-1">{{ rca_cards[0].percent }}% <small class="text-muted">of failures</small></div>
+              <div class="small-muted mt-2">Common Issues:</div>
+              <div class="mt-2">
+                {% for tag in rca_cards[0].common %}
+                  <span class="badge badge-light mr-1">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <div class="percent-badge red">{{ rca_cards[0].trend }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-4">
+        <div class="rca-card">
+          <div class="rca-big">
+            <div>
+              <div class="small-muted">Engine Control Unit</div>
+              <div class="h4 mt-1">{{ rca_cards[1].percent }}% <small class="text-muted">of failures</small></div>
+              <div class="small-muted mt-2">Common Issues:</div>
+              <div class="mt-2">
+                {% for tag in rca_cards[1].common %}
+                  <span class="badge badge-light mr-1">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <div class="percent-badge orange">{{ rca_cards[1].trend }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-4">
+        <div class="rca-card">
+          <div class="rca-big">
+            <div>
+              <div class="small-muted">Battery System</div>
+              <div class="h4 mt-1">{{ rca_cards[2].percent }}% <small class="text-muted">of failures</small></div>
+              <div class="small-muted mt-2">Common Issues:</div>
+              <div class="mt-2">
+                {% for tag in rca_cards[2].common %}
+                  <span class="badge badge-light mr-1">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <div class="percent-badge red">{{ rca_cards[2].trend }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-4">
+        <div class="rca-card">
+          <div class="rca-big">
+            <div>
+              <div class="small-muted">Cooling System</div>
+              <div class="h4 mt-1">{{ rca_cards[3].percent }}% <small class="text-muted">of failures</small></div>
+              <div class="small-muted mt-2">Common Issues:</div>
+              <div class="mt-2">
+                {% for tag in rca_cards[3].common %}
+                  <span class="badge badge-light mr-1">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div>
+              <div class="percent-badge blue">{{ rca_cards[3].trend }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card rca-card">
+      <div class="card-body">
+        <h5 class="card-title">Component Failure Trends</h5>
+        <canvas id="failureChart" height="160"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="rca-card mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">CAPA Reports</h5>
+        <button class="btn btn-sm btn-primary">+ New Report</button>
+      </div>
+      <div class="capa-list">
+        {% for r in capa_reports %}
+          <div class="capa-item">
+            <div class="title">{{ r.title }}</div>
+            <div class="small text-muted">{{ r.team }} · <span class="badge badge-{{ r.status_class }}">{{ r.status }}</span> <span class="ml-2">Priority: {{ r.priority }}</span></div>
+            <div class="small text-muted">Due: {{ r.due }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="rca-card">
+      <h6>Quick Stats</h6>
+      <div class="mt-2">Active Vehicles: <strong>{{ quick.active_vehicles }}</strong></div>
+      <div class="mt-2">Predicted Issues: <strong>{{ quick.predicted_issues }}</strong></div>
+      <div class="mt-2">Avg Uptime: <strong>{{ quick.avg_uptime }}%</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('failureChart').getContext('2d');
+  const labels = {{ chart.labels|tojson }};
+  const datasets = {{ chart.datasets|tojson }};
+
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels: labels, datasets: datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      stacked: false,
+      plugins: { tooltip: { enabled: true }, legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+</script>
+
+{% endblock %}

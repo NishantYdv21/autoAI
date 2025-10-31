@@ -1,0 +1,22 @@
+{
+  "2229": {
+    "name": "Mridul",
+    "vehicle_no": "2229",
+    "registered_at": "2025-10-31T00:25:45.821484"
+  },
+  "123456": {
+    "name": "Tanushree",
+    "vehicle_no": "123456",
+    "registered_at": "2025-10-31T03:03:10.428072"
+  },
+  "TEST-123": {
+    "name": "Test User",
+    "vehicle_no": "TEST-123",
+    "registered_at": "2025-10-31T05:37:45.862226"
+  },
+  "3426": {
+    "name": "Nishant",
+    "vehicle_no": "3426",
+    "registered_at": "2025-10-31T05:20:49.224241"
+  }
+}

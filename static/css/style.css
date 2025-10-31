@@ -1,0 +1,188 @@
+:root{
+    --dark-bg: #0D1117;
+    --dark-navy: #0A1929;
+    --darker: #060D16;
+    --muted: #4A5568;
+    --primary: #00A3FF;
+    --primary-hover: #0089FF;
+    --card-bg: #0A1929;
+    --accent: #00A3FF;
+}
+body {
+    background: var(--dark-bg);
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    color: #fff;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.app-sidebar {
+    width: 260px;
+    background: var(--dark-navy);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.brand {
+    padding: 0.5rem 0 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.brand-title {
+    font-weight: 500;
+    font-size: 1.25rem;
+    margin: 0.75rem 0 0.25rem;
+}
+
+.brand-sub {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.user-mini {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--darker);
+    border-radius: 12px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    margin: 0 auto 0.75rem;
+}
+
+.user-name {
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.user-role {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.app-nav {
+    margin-top: 1rem;
+}
+
+.app-nav .nav-link {
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s;
+}
+
+.app-nav .nav-link:hover {
+    background: rgba(0, 163, 255, 0.1);
+    text-decoration: none;
+}
+
+.app-nav .nav-link i {
+    width: 20px;
+    text-align: center;
+    margin-right: 0.75rem;
+}
+
+.app-nav .chat-link {
+    background: var(--primary);
+    color: #fff;
+}
+
+.app-nav .chat-link:hover {
+    background: var(--primary-hover);
+}
+
+.sidebar-footer {
+    padding-top: 1.5rem;
+    margin-top: auto;
+}
+
+.btn-logout {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.app-main {
+    background: var(--dark-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    height: 64px;
+    background: var(--dark-navy);
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.header-right {
+    align-items: center;
+}
+
+.header-right .notification {
+    color: var(--muted);
+    transition: color 0.3s;
+}
+
+.header-right .notification:hover {
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.profile-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+}
+
+.app-content {
+    min-height: calc(100vh - 64px);
+    background: var(--dark-bg);
+}
+
+.card {
+    border-radius: 12px;
+    background: var(--dark-navy);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card-title {
+    font-weight: 500;
+    color: #fff;
+}
+
+#chatBox div{margin-bottom:8px}
+
+/* Responsive */
+@media (max-width:900px){
+	.app-sidebar{display:none}
+	.app-main{margin-left:0}
+}

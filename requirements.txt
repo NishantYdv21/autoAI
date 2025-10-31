@@ -1,0 +1,5 @@
+Flask>=2.0
+pytest>=6.0
+google-generativeai>=0.3.0
+jspdf>=0.1.0
+uuid>=1.30

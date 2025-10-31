@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h3 class="mb-3">Login</h3>
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    {% if info %}
+      <div class="alert alert-success">{{ info }}</div>
+    {% endif %}
+    <form method="post" id="loginForm">
+      <div class="form-group">
+        <label>Role</label><br>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="role" id="roleUser" value="user" checked>
+          <label class="form-check-label" for="roleUser">User</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="role" id="roleAdmin" value="admin">
+          <label class="form-check-label" for="roleAdmin">Admin</label>
+        </div>
+      </div>
+
+      <div id="userFields">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" name="name" id="name" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label for="vehicle_no">Vehicle No</label>
+          <input type="text" class="form-control" name="vehicle_no" id="vehicle_no" placeholder="Vehicle number">
+        </div>
+      </div>
+
+      <div id="adminFields" style="display:none;">
+        <div class="form-group">
+          <label for="username">Admin Username</label>
+          <input type="text" class="form-control" name="username" id="username" placeholder="admin">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" class="form-control" name="password" id="password" placeholder="password">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="button" class="btn btn-link" data-toggle="modal" data-target="#registerModal">New User</button>
+    </form>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form method="post" action="{{ url_for('register') }}">
+      <div class="modal-header">
+        <h5 class="modal-title">Register New User</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="reg_name">Name</label>
+          <input type="text" class="form-control" name="reg_name" id="reg_name" required>
+        </div>
+        <div class="form-group">
+          <label for="reg_vehicle">Vehicle No</label>
+          <input type="text" class="form-control" name="reg_vehicle" id="reg_vehicle" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const roleUser = document.getElementById('roleUser');
+  const roleAdmin = document.getElementById('roleAdmin');
+  const userFields = document.getElementById('userFields');
+  const adminFields = document.getElementById('adminFields');
+
+  function updateFields(){
+    if(roleAdmin.checked){
+      userFields.style.display = 'none';
+      adminFields.style.display = 'block';
+    } else {
+      userFields.style.display = 'block';
+      adminFields.style.display = 'none';
+    }
+  }
+  roleUser.addEventListener('change', updateFields);
+  roleAdmin.addEventListener('change', updateFields);
+});
+</script>
+{% endblock %}

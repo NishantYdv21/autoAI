@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Admin Dashboard</h2>
+  <div class="text-muted">Fleet Overview</div>
+  </div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <div class="card p-3 mb-2">
+      <div class="card-body p-0">
+        <div class="text-muted small">Active Vehicles</div>
+        <div class="h3">{{ active_vehicles }}</div>
+        <div class="text-success small">+12 this week</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 mb-2">
+      <div class="card-body p-0">
+        <div class="text-muted small">Predicted Issues</div>
+        <div class="h3">{{ predicted_issues }}</div>
+        <div class="text-success small">+5 this week</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 mb-2">
+      <div class="card-body p-0">
+        <div class="text-muted small">Scheduled Services</div>
+        <div class="h3">47</div>
+        <div class="text-success small">+8 this week</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3 mb-2">
+      <div class="card-body p-0">
+        <div class="text-muted small">Vehicle Uptime</div>
+        <div class="h3">{{ avg_uptime }}%</div>
+        <div class="text-success small">+1.2% this week</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Vehicle Health Overview</h5>
+        <canvas id="uptimeChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Recent Alerts</h5>
+        <div class="mt-2">
+          {% for v in recent_alerts %}
+          <div class="p-3 mb-2" style="border-left:4px solid #e74c3c;background:#fff;border-radius:8px">
+            <strong>{{ v.vehicle_no }}</strong>
+            <div class="small text-muted">{{ v.last_alert }}</div>
+            <div class="mt-1 badge badge-danger">{{ v.predicted_risk }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Fleet Condition</h5>
+    <div class="table-responsive">
+      <table class="table table-sm mb-0">
+        <thead><tr><th>Vehicle</th><th>Uptime</th><th>Risk</th><th>Condition</th></tr></thead>
+        <tbody>
+          {% for v in fleet %}
+          <tr>
+            <td>{{ v.vehicle_no }}</td>
+            <td>{{ v.uptime }}%</td>
+            <td>{{ v.predicted_risk }}</td>
+            <td>{{ v.condition }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  try{
+    const ctx = document.getElementById('uptimeChart').getContext('2d');
+    const labels = {{ fleet|map(attribute='vehicle_no')|list|tojson }};
+    const data = {{ fleet|map(attribute='uptime')|list|tojson }};
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Health',
+          data: data,
+          borderColor: '#2ea6a6',
+          fill:false
+        }]
+      },
+      options:{scales:{yAxes:[{ticks:{beginAtZero:false}}]}}
+    });
+  }catch(e){console.warn(e)}
+</script>
+
+{% endblock %}

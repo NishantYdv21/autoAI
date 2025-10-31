@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="mb-0">Welcome, {{ name }}</h2>
+  <div class="text-muted">Vehicle: <strong>{{ maintenance.vehicle_no }}</strong></div>
+  </div>
+
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Vehicle Maintenance</h5>
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <p class="mb-1"><strong>Last Service:</strong> {{ maintenance.last_service }}</p>
+            <p class="mb-1"><strong>Next due (km):</strong> {{ maintenance.next_expected_service_km }}</p>
+            <p class="mb-0"><strong>Health Score:</strong> <span class="text-success">{{ maintenance.health_score }}%</span></p>
+          </div>
+          <div style="width:160px;height:160px;border-radius:50%;background:conic-gradient(#2ea6a6 {{ maintenance.health_score }}%, #e6eef4 0);display:flex;align-items:center;justify-content:center;font-weight:700">
+            {{ maintenance.health_score }}%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Vehicle Activity</h5>
+        <canvas id="activityChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Vehicle Details</h5>
+        <p class="mb-1"><strong>License Plate</strong><br>{{ maintenance.vehicle_no }}</p>
+        <p class="mb-1"><strong>Location</strong><br>Mumbai</p>
+        <p class="mb-1"><strong>Model</strong><br>SUV Premium</p>
+        <p class="mb-0"><strong>Active Issues</strong><br>0</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// simple chart
+try{
+  const ctx = document.getElementById('activityChart').getContext('2d');
+  new Chart(ctx, {type:'line', data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{label:'Health', data:[90,88,85,88,92,94,93], borderColor:'#2ea6a6', fill:false}]}});
+}catch(e){console.warn(e)}
+</script>
+
+{% endblock %}

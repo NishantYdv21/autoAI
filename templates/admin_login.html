@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-dark text-white">
+    <div class="login-container">
+        <div class="text-center mb-4">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="AutoPredict AI" class="mb-2" style="height: 40px;">
+            <h1 class="h3 mb-0 font-weight-normal text-white">AutoPredict AI</h1>
+            <p class="text-muted">Admin Portal - Login</p>
+        </div>
+        
+        <div class="card bg-dark-navy border-0 shadow p-4" style="width: 400px;">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            <form method="post" action="{{ url_for('admin_login') }}">
+                <div class="form-group mb-3">
+                    <label for="username" class="text-muted mb-2">Username</label>
+                    <input type="text" class="form-control bg-darker text-white border-0" 
+                           id="username" name="username" placeholder="Enter admin username"
+                           style="height: 50px;">
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="password" class="text-muted mb-2">Password</label>
+                    <input type="password" class="form-control bg-darker text-white border-0" 
+                           id="password" name="password" placeholder="Enter password"
+                           style="height: 50px;">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-3"
+                        style="height: 50px; background-color: #00A3FF; border: none;">
+                    Login
+                </button>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('portal_selection') }}" class="btn btn-link text-muted text-decoration-none">
+                        Back to portal selection
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-dark-navy {
+    background-color: #0A1929;
+}
+.bg-darker {
+    background-color: #060D16;
+}
+.form-control:focus {
+    background-color: #060D16;
+    border-color: #00A3FF;
+    box-shadow: none;
+    color: white;
+}
+.form-control::placeholder {
+    color: #4A5568;
+}
+</style>
+{% endblock %}
