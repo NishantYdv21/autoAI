@@ -1,4 +1,4 @@
-# FleetAI Prototype 🚗
+# AutoAI Prototype 🚗
 
 A prototype app for automotive predictive maintenance, featuring:
 - Admin dashboard for fleet monitoring and maintenance tracking
